@@ -3,7 +3,7 @@ Pydantic schemas for request/response validation.
 """
 
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 
 
@@ -146,3 +146,17 @@ class CheckInListResponse(BaseModel):
     """List of check-ins."""
     check_ins: List[CheckInResponse]
     total: int
+
+class ChatRequest(BaseModel):
+    """Request to send a chat message."""
+    message: str
+    max_tokens: Optional[int] = 512
+    temperature: Optional[float] = 0.7
+
+
+class ChatResponse(BaseModel):
+    """Complete chat response with both messages."""
+    session_id: str
+    user_message: MessageResponse
+    assistant_message: MessageResponse
+    usage: Dict[str, Any] = {}

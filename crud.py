@@ -240,3 +240,44 @@ def delete_checkin(db: Session, checkin_id: int) -> bool:
         db.commit()
         return True
     return False
+
+
+def create_message_pair(
+    db: Session,
+    conversation_id: int,
+    user_message: str,
+    assistant_message: str
+) -> tuple[Message, Message]:
+    """
+    Create user and assistant messages together (batch operation).
+    More efficient than creating them separately.
+    """
+    # Create both messages
+    user_msg = Message(
+        conversation_id=conversation_id,
+        role="user",
+        content=user_message
+    )
+    assistant_msg = Message(
+        conversation_id=conversation_id,
+        role="assistant",
+        content=assistant_message
+    )
+    
+    # Add both to session
+    db.add(user_msg)
+    db.add(assistant_msg)
+    
+    # Update conversation timestamp
+    conversation = db.query(Conversation).filter(Conversation.id == conversation_id).first()
+    if conversation:
+        conversation.updated_at = datetime.now(timezone.utc)
+    
+    # Single commit for all operations
+    db.commit()
+    
+    # Refresh both
+    db.refresh(user_msg)
+    db.refresh(assistant_msg)
+    
+    return user_msg, assistant_msg

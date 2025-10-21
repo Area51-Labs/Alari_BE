@@ -13,7 +13,7 @@ from config import (
     CORS_ORIGINS, CORS_ALLOW_CREDENTIALS, CORS_ALLOW_METHODS, CORS_ALLOW_HEADERS
 )
 from database import init_db
-from routes import auth_routes, goals, conversations, db_health
+from routes import auth_routes, goals, conversations, db_health, chat
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ app.include_router(auth_routes.router, prefix="/auth", tags=["Authentication"])
 app.include_router(conversations.router, prefix="/conversations", tags=["Conversations"])
 app.include_router(goals.router, prefix="/goals", tags=["Goals"])
 app.include_router(db_health.router, prefix="/db", tags=["Database Health"])
-
+app.include_router(chat.router, prefix="/chat", tags=["Chat"])
 
 @app.get("/")
 async def root():
